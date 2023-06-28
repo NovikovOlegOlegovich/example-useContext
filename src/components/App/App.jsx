@@ -1,21 +1,22 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from 'react';
 import Notiflix from 'notiflix';
 import { Wrapper } from './App.styled';
 import ContactForm from '../ContactForm';
 import ContactList from '../ContactList';
 import Filter from '../Filter';
 import Title from '../Title';
+import { useUser } from '../userContext/UserContext';
 
 const App = () => {
-  const [contacts, setContacts] = useState(() => {
-    const contacts = localStorage.getItem('contacts');
-    const parsedContacts = JSON.parse(contacts);
-    if (!parsedContacts) {
-      return [];
-    }
-    return parsedContacts;
-  });
-  const [filter, setFilter] = useState('');
+  const { contacts, setContacts, filter, setFilter } = useUser();
+  // const [contacts, setContacts] = useState(() => {
+  //   const contacts = localStorage.getItem('contacts');
+  //   if (contacts) {
+  //     return [];
+  //   }
+  //   return JSON.parse(contacts);
+  // });
+  // const [filter, setFilter] = useState('');
 
   useEffect(() => {
     localStorage.setItem('contacts', JSON.stringify(contacts));
@@ -27,7 +28,7 @@ const App = () => {
     if (parsedContacts) {
       setContacts(parsedContacts);
     }
-  }, []);
+  }, [setContacts]);
 
   const checkUnicName = currentName => {
     return contacts.find(contact => contact.name === currentName);
@@ -56,9 +57,7 @@ const App = () => {
   };
 
   const deleteContact = contactId => {
-    setContacts(prevState => {
-      prevState.filter(contact => contact.id !== contactId);
-    });
+    setContacts(contacts.filter(contact => contact.id !== contactId));
   };
 
   const visibleContacts = getVisibleContacts();
